@@ -1,3 +1,5 @@
+点击关注[公众号](#公众号)及时获取笔主最新更新文章，并可免费领取本文档配套的《Java面试突击》以及Java工程师必备学习资源。
+
 随着 Java 8 的普及度越来越高，很多人都提到面试中关于Java 8 也是非常常问的知识点。应各位要求和需要，我打算对这部分知识做一个总结。本来准备自己总结的，后面看到Github 上有一个相关的仓库，地址：
 [https://github.com/winterbe/java8-tutorial](https://github.com/winterbe/java8-tutorial)。这个仓库是英文的，我对其进行了翻译并添加和修改了部分内容，下面是正文了。
 
@@ -13,12 +15,12 @@
       - [访问字段和静态变量](#访问字段和静态变量)
       - [访问默认接口方法](#访问默认接口方法)
     - [内置函数式接口\(Built-in Functional Interfaces\)](#内置函数式接口built-in-functional-interfaces)
-      - [Predicates](#predicates)
-      - [Functions](#functions)
-      - [Suppliers](#suppliers)
-      - [Consumers](#consumers)
-      - [Comparators](#comparators)
-  - [Optionals](#optionals)
+      - [Predicate](#predicate)
+      - [Function](#function)
+      - [Supplier](#supplier)
+      - [Consumer](#consumer)
+      - [Comparator](#comparator)
+  - [Optional](#optional)
   - [Streams\(流\)](#streams流)
     - [Filter\(过滤\)](#filter过滤)
     - [Sorted\(排序\)](#sorted排序)
@@ -37,7 +39,7 @@
     - [LocalDate\(本地日期\)](#localdate本地日期)
     - [LocalDateTime\(本地日期时间\)](#localdatetime本地日期时间)
   - [Annotations\(注解\)](#annotations注解)
-  - [Whete to go from here?](#whete-to-go-from-here)
+  - [Where to go from here?](#where-to-go-from-here)
 
 <!-- /MarkdownTOC -->
 
@@ -71,7 +73,7 @@ Formula 接口中除了抽象方法计算接口公式还定义了默认方法 `s
 public class Main {
 
   public static void main(String[] args) {
-    // TODO 通过匿名内部类方式访问接口
+    // 通过匿名内部类方式访问接口
     Formula formula = new Formula() {
         @Override
         public double calculate(int a) {
@@ -285,7 +287,7 @@ JDK 1.8 API包含许多内置函数式接口。 其中一些借口在老版本�
 
 但是 Java 8 API 同样还提供了很多全新的函数式接口来让你的编程工作更加方便，有一些接口是来自 [Google Guava](https://code.google.com/p/guava-libraries/) 库里的，即便你对这些很熟悉了，还是有必要看看这些是如何扩展到lambda上使用的。
 
-#### Predicates
+#### Predicate
 
 Predicate 接口是只有一个参数的返回布尔类型值的 **断言型** 接口。该接口包含多种默认方法来将 Predicate 组合成其他复杂的逻辑（比如：与，或，非）：
 
@@ -338,7 +340,7 @@ Predicate<String> isEmpty = String::isEmpty;
 Predicate<String> isNotEmpty = isEmpty.negate();
 ```
 
-#### Functions
+#### Function
 
 Function 接口接受一个参数并生成结果。默认方法可用于将多个函数链接在一起（compose, andThen）：
 
@@ -380,7 +382,7 @@ Function<String, String> backToString = toInteger.andThen(String::valueOf);
 backToString.apply("123");     // "123"
 ```
 
-#### Suppliers
+#### Supplier
 
 Supplier 接口产生给定泛型类型的结果。 与 Function 接口不同，Supplier 接口不接受参数。
 
@@ -389,7 +391,7 @@ Supplier<Person> personSupplier = Person::new;
 personSupplier.get();   // new Person
 ```
 
-#### Consumers
+#### Consumer
 
 Consumer 接口表示要对单个输入参数执行的操作。
 
@@ -398,7 +400,7 @@ Consumer<Person> greeter = (p) -> System.out.println("Hello, " + p.firstName);
 greeter.accept(new Person("Luke", "Skywalker"));
 ```
 
-#### Comparators
+#### Comparator
 
 Comparator 是老Java中的经典接口， Java 8在此之上添加了多种默认方法：
 
@@ -412,9 +414,9 @@ comparator.compare(p1, p2);             // > 0
 comparator.reversed().compare(p1, p2);  // < 0
 ```
 
-## Optionals
+## Optional
 
-Optionals不是函数式接口，而是用于防止 NullPointerException 的漂亮工具。这是下一节的一个重要概念，让我们快速了解一下Optionals的工作原理。
+Optional不是函数式接口，而是用于防止 NullPointerException 的漂亮工具。这是下一节的一个重要概念，让我们快速了解一下Optional的工作原理。
 
 Optional 是一个简单的容器，其值可能是null或者不是null。在Java 8之前一般某个函数应该返回非空对象但是有时却什么也没有返回，而在Java 8中，你应该返回 Optional 而不是 null。
 
@@ -442,15 +444,15 @@ optional.ifPresent((s) -> System.out.println(s.charAt(0)));     // "b"
 首先看看Stream是怎么用，首先创建实例代码的用到的数据List：
 
 ```java
-List<String> stringCollection = new ArrayList<>();
-stringCollection.add("ddd2");
-stringCollection.add("aaa2");
-stringCollection.add("bbb1");
-stringCollection.add("aaa1");
-stringCollection.add("bbb3");
-stringCollection.add("ccc");
-stringCollection.add("bbb2");
-stringCollection.add("ddd1");
+List<String> stringList = new ArrayList<>();
+stringList.add("ddd2");
+stringList.add("aaa2");
+stringList.add("bbb1");
+stringList.add("aaa1");
+stringList.add("bbb3");
+stringList.add("ccc");
+stringList.add("bbb2");
+stringList.add("ddd1");
 ```
 
 Java 8扩展了集合类，可以通过 Collection.stream() 或者 Collection.parallelStream() 来创建一个Stream。下面几节将详细解释常用的Stream操作：
@@ -492,7 +494,7 @@ forEach 是为 Lambda 而设计的，保持了最紧凑的风格。而且 Lambda
 
 中间操作 map 会将元素根据指定的 Function 接口来依次将元素转成另外的对象。
 
-下面的示例展示了将字符串转换为大写字符串。你也可以通过map来讲对象转换成其他类型，map返回的Stream类型是根据你map传递进去的函数的返回值决定的。
+下面的示例展示了将字符串转换为大写字符串。你也可以通过map来将对象转换成其他类型，map返回的Stream类型是根据你map传递进去的函数的返回值决定的。
 
 ```java
         // 测试 Map 操作
@@ -916,9 +918,16 @@ System.out.println(hints2.length);          // 2
 @interface MyAnnotation {}
 ```
 
-
-
-## Whete to go from here?
+## Where to go from here?
 
 关于Java 8的新特性就写到这了，肯定还有更多的特性等待发掘。JDK 1.8里还有很多很有用的东西，比如`Arrays.parallelSort`, `StampedLock`和`CompletableFuture`等等。
 
+## 公众号
+
+如果大家想要实时关注我更新的文章以及分享的干货的话，可以关注我的公众号。
+
+**《Java面试突击》:** 由本文档衍生的专为面试而生的《Java面试突击》V2.0 PDF 版本[公众号](#公众号)后台回复 **"Java面试突击"** 即可免费领取！
+
+**Java工程师必备学习资源:** 一些Java工程师常用学习资源[公众号](#公众号)后台回复关键字 **“1”** 即可免费无套路获取。 
+
+![我的公众号](https://user-gold-cdn.xitu.io/2018/11/28/167598cd2e17b8ec?w=258&h=258&f=jpeg&s=27334)
